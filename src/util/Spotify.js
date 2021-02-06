@@ -1,5 +1,6 @@
-const clientID = "764731638a66435eafb1418d56e1c065"; /*insert client id here*/
+const clientID = ""; /*insert client id here*/
 const redirectUri = "http://smelly-patch.surge.sh";
+// const redirectUri = "http://localhost:3000/";
 let accessToken;
 
 const Spotify = {

@@ -13,6 +13,7 @@ class App extends React.Component {
       searchResults: [],
       playlistName: "",
       playlistTracks: [],
+      searchTerm: "",
     };
     this.addTrack = this.addTrack.bind(this);
     this.removeTrack = this.removeTrack.bind(this);
@@ -27,9 +28,17 @@ class App extends React.Component {
     if (playlist.find((savedTrack) => savedTrack.id === track.id)) {
       return;
     }
-    //else add the track to the playlisy
+    //else add the track to the playlist
     playlist.push(track);
     this.setState({ playlistTracks: playlist });
+    //remove the track from the search results as it is now in the playlist
+    let searchResults = this.state.searchResults.slice();
+    searchResults = searchResults.filter(
+      (currentTrack) => currentTrack.id !== track.id
+    );
+    this.setState({
+      searchResults: searchResults,
+    });
   }
 
   removeTrack(track) {
@@ -38,6 +47,12 @@ class App extends React.Component {
       playlistTracks: playlist.filter(
         (savedTrack) => savedTrack.id !== track.id
       ),
+    });
+    //add track into top of current search results list
+    let searchResults = this.state.searchResults.slice();
+    searchResults.unshift(track);
+    this.setState({
+      searchResults: searchResults,
     });
   }
 
@@ -67,7 +82,18 @@ class App extends React.Component {
 
   search(searchTerm) {
     Spotify.search(searchTerm).then((searchResults) => {
-      this.setState({ searchResults: searchResults });
+      //filter search results to remove any tracks already in playlist
+      searchResults = searchResults.filter((track) => {
+        let newTrack = true;
+        this.state.playlistTracks.forEach((addedTrack) => {
+          if (addedTrack.id === track.id) {
+            newTrack = false;
+          }
+        });
+        return newTrack;
+      });
+
+      this.setState({ searchResults: searchResults, searchTerm: searchTerm });
     });
   }
 
@@ -83,6 +109,7 @@ class App extends React.Component {
             <SearchResults
               searchResults={this.state.searchResults}
               onAdd={this.addTrack}
+              searchTerm={this.state.searchTerm}
             />
             <Playlist
               playlistName={this.state.playlistName}
@@ -95,6 +122,12 @@ class App extends React.Component {
         </div>
       </div>
     );
+  }
+
+  componentDidMount() {
+    window.addEventListener("load", () => {
+      Spotify.getAccessToken();
+    });
   }
 }
 
