@@ -1,4 +1,4 @@
-const clientID = ""; /*insert client id here*/
+const clientID = "764731638a66435eafb1418d56e1c065"; /*insert client id here*/
 const redirectUri = "http://smelly-patch.surge.sh";
 let accessToken;
 
@@ -26,7 +26,7 @@ const Spotify = {
   },
 
   search(searchTerm) {
-    const accessToken = Spotify.getAccessToken();
+    accessToken = Spotify.getAccessToken();
     return fetch(
       `https://api.spotify.com/v1/search?type=track&q=${searchTerm}`,
       {
